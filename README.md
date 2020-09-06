@@ -6,6 +6,7 @@ huda0209式 discord botのテンプレート
    ```https://github.com/huda0209/discord-bot-template.git```
 2. ```npm install```を実行
 3. `.env`にトークンをセット(MAIN_TOKENはメイン使用 TEST_TOKENはテスト用)
+<<<<<<< HEAD
 4. ```node main.js main```でメイントークンでbotログイン<br>
 　 ```node main.js test```でテストトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
 
