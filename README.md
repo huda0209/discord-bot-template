@@ -2,13 +2,12 @@
 huda0209式 discord botのテンプレート
 
 ## 使い方
-1. 適当なディレクトリを作り、そこにクローン
-   ```https://github.com/huda0209/discord-bot-template.git```
+1. リリースからファイルをダウンロードし展開
 2. ```npm install```を実行
 3. `.env`にトークンをセット(MAIN_TOKENはメイン使用 TEST_TOKENはテスト用)
 <<<<<<< HEAD
 4. ```node main.js main```でメイントークンでbotログイン<br>
-　 ```node main.js test```でテストトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
+　```node main.js test```でテストトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
 
 ## その他
 ready, guildCreate, guildUpdate, guildMemberAdd, message, guildMemberUpdate, messageReactionAdd のイベント呼び出しコードを書いています。<br>
