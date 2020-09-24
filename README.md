@@ -4,8 +4,9 @@ huda0209式 discord botのテンプレート
 ## 使い方
 1. リリースからファイルをダウンロードし展開
 2. ```npm install```を実行
-3. Developer Portal[Developer Portal](https://discord.com/developers/applications)からPrivileged Intentsを有効化する<br>
-![discord-div-Privileged_Intents.png](https://github.com/huda0209/resource/blob/master/discord-bot-template/discord-div-Privileged_Intents.png)
+3. [Developer Portal](https://discord.com/developers/applications)からPrivileged Intentsを有効化する<br>
+![discord-div-Privileged_Intents.png](https://github.com/huda0209/resource/blob/master/discord-bot-template/discord-div-Privileged_Intents.png)<br>
+赤枠内のチェックボタンをオンにする<br>
 4. config内の`setting.json`にトークンをセット(MAIN_TOKENはメイン使用 DIV_TOKENはテスト用)
 5. ```node main.js main```でメイントークンでbotログイン<br>
 ```node main.js test```でディベロプトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
