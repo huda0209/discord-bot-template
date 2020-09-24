@@ -101,10 +101,10 @@ if(process.argv.length>=3){
       token = json.MAIN_TOKEN;
       break;
     case "test" :
-      if(json.TEST_TOKEN == undefined || json.TEST_TOKEN == ""){
-        console.log("please set setting.json : TEST_TOKEN");
+      if(json.DIV_TOKEN == undefined || json.DIV_TOKEN == ""){
+        console.log("please set setting.json : DIV_TOKEN");
         process.exit(0)};
-      token = json.TEST_TOKEN;
+      token = json.DIV_TOKEN;
       json.VERSION = `dev(${json.VERSION})`;
       break;
     default :
