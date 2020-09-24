@@ -1,7 +1,7 @@
 {
-    "guild" : {
-                "GuildId" : "",
-                "GuildName" : "",
-                "Owner" : ""
-               }
+    "NAME" : "",
+    "MAIN_TOKEN" : "",
+    "DIV_TOKEN" : "",
+    "VERSION" : "0.0.0",
+    "PREFIX" : "/"
 }
