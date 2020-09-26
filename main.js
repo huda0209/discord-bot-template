@@ -8,7 +8,7 @@ main.js :MAIN  'MAIN CODE'　<= this
  
 ran by node.js
 
-2020-9-24
+2020-9-26
 
 */
 
@@ -59,7 +59,8 @@ client.on("message", async message => {
     console.log(error);
     return};
   if (message.content.startsWith(PREFIX)){
-    const [command, ...args] = message.content.slice(PREFIX.length).split(' ')
+    const [command, ...args] = message.content.slice(PREFIX.length).split(' ');
+
     if(command === "stop" &&(message.author.id === message.guild.ownerID)){
       console.log(`server was stoped by ${message.author.tag}`);
       await message.delete();
@@ -100,7 +101,7 @@ if(process.argv.length>=3){
     case "main" :
       token = json.MAIN_TOKEN;
       break;
-    case "test" :
+    case "div" :
       if(json.DIV_TOKEN == undefined || json.DIV_TOKEN == ""){
         console.log("please set setting.json : DIV_TOKEN");
         process.exit(0)};
@@ -108,7 +109,7 @@ if(process.argv.length>=3){
       json.VERSION = `dev(${json.VERSION})`;
       break;
     default :
-      console.log(`\nUnknown command. \nUsage \n node main.js main : use main token \n node main.js test : use test token`);
+      console.log(`\nUnknown command. \nUsage \n node main.js main : use main token \n node main.js div : use divelopment token`);
       process.exit(0);
   };
 }else token = json.MAIN_TOKEN;
