@@ -8,7 +8,7 @@ main.js :MAIN  'MAIN CODE'　<= this
  
 ran by node.js
 
-2020-9-27
+2020-10-4
 
 */
 
@@ -30,7 +30,7 @@ const letter = [[":zero:","0⃣"],[":one:","1⃣"],[":two:","2⃣"],[":three:","
 
 //start the bot
 client.on("ready", message => {
-  console.log(`${color.header('info')} bot is ready! ver. ${json.VERSION} \n       login: ${color.chcol('cyan')}${client.user.tag}${color.reset()}\n`);
+  console.log(`${color.header.info}bot is ready! ver. ${json.VERSION} \n        login: ${color.chcol.cyan}${client.user.tag}${color.reset}\n`);
   client.user.setActivity(`${PREFIX}helpでヘルプを表示 ver. ${json.VERSION}`, { type: 'PLAYING' });
 });
 
@@ -40,7 +40,7 @@ client.on("guildCreate", bot =>{
                 "GuildName" : bot.name,
                 "Owner" : bot.ownerID};
   fs.writeFileSync(`./config/guild/${bot.id}.json`, JSON.stringify(DATA, null, '\t'),'utf8');
-  console.log("guildCreate catch");
+  console.log(`${color.header.info}guildCreate catch`);
   })
 
 //guild update event
@@ -48,7 +48,7 @@ client.on("guildUpdate", bot =>{
   let DATA = JSON.parse(fs.readFileSync(`./config/guild/${bot.id}.json`,'utf8'));
   DATA.GuildName = bot.members.guild.name;
   fs.writeFileSync(`./config/guild/${bot.id}.json`,JSON.stringify(DATA, null, '\t'),'utf8');
-  console.log("guildUpdate catch");
+  console.log(`${color.header.info}guildUpdate catch`);
 })
 
 //message event
@@ -57,13 +57,13 @@ client.on("message", async message => {
   try{
     DATA = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
   }catch (error){
-    console.log(`${color.header('error')}fail to load guild file \n${error}\n`);
+    console.log(`${color.header.error}fail to load guild file \n${error}\n`);
     return};
   if (message.content.startsWith(PREFIX)){
     const [command, ...args] = message.content.slice(PREFIX.length).split(' ');
 
     if(command === "stop" &&(message.author.id === message.guild.ownerID)){
-      console.log(`${color.header('info')}server was stoped by ${message.author.tag}\n`);
+      console.log(`${color.header.info}server was stoped by ${message.author.tag}\n`);
       await message.delete();
       client.destroy();
       process.exit(0)};
@@ -93,7 +93,7 @@ client.on("messageReactionAdd", async(messageReaction ,user) =>{
 
 
 if(json.MAIN_TOKEN == undefined || json.MAIN_TOKEN == ""){
-  console.log(`${color.header('error')}please set setting.json : ${color.chcol('cyan')}MAIN_TOKEN${color.reset()}`);
+  console.log(`${color.header.error}please set setting.json : ${color.chcol.cyan}MAIN_TOKEN${color.reset}`);
   process.exit(0);
 }
 let token;
@@ -104,13 +104,13 @@ if(process.argv.length>=3){
       break;
     case "div" :
       if(json.DIV_TOKEN == undefined || json.DIV_TOKEN == ""){
-        console.log(`${color.header('error')}please set setting.json : ${color.chcol('cyan')}DIV_TOKEN${color.reset()}`);
+        console.log(`${color.header.error}please set setting.json : ${color.chcol.cyan}DIV_TOKEN${color.reset}`);
         process.exit(0)};
       token = json.DIV_TOKEN;
       json.VERSION = `dev(${json.VERSION})`;
       break;
     default :
-      console.log(`${color.header('error')}Unknown command. \n${color.chcol('cyan')}Usage${color.reset()} \n node main.js main : use main token \n node main.js div : use divelopment token`);
+      console.log(`${color.header.error}Unknown command. \n${color.chcol.cyan}Usage${color.reset} \n node main.js main : use main token \n node main.js div : use divelopment token`);
       process.exit(0);
   };
 }else token = json.MAIN_TOKEN;
