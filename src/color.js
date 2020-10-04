@@ -9,59 +9,39 @@ main.js :MAIN  'MAIN CODE'
  
 ran by node.js
 
-2020-9-27
+2020-10-4
 
 */
 
-exports.chcol = function(col){
-    switch(col.toLowerCase()){
-        case 'black':
-            return '\u001b[30m';
-        case 'red':
-            return '\u001b[31m';
-        case 'green':
-            return '\u001b[32m';
-        case 'yellow':
-            return '\u001b[33m';
-        case 'magenta' : 
-            return '\u001b[34m';
-        case 'cyan':
-            return '\u001b[36m';
-        case 'white':
-            return '\u001b[37m';
-    }
+const color = {
+    'black': '\u001b[30m',
+    'red': '\u001b[31m',
+    'green': '\u001b[32m',
+    'yellow': '\u001b[33m',
+    'magenta' :  '\u001b[34m',
+    'cyan': '\u001b[36m',
+    'white': '\u001b[37m'
 }
 
-exports.bgcolor = function(col){
-    switch(col.toLowerCase()){
-        case 'black':
-            return '\u001b[40m';
-        case 'red':
-            return '\u001b[41m';
-        case 'green':
-            return '\u001b[42m';
-        case 'yellow':
-            return '\u001b[43m';
-        case 'magenta' : 
-            return '\u001b[44m';
-        case 'cyan':
-            return '\u001b[46m';
-        case 'white':
-            return '\u001b[47m';
-    }
+const bgcolor = {
+   'black': '\u001b[40m',
+   'red': '\u001b[41m',
+   'green': '\u001b[42m',
+   'yellow': '\u001b[43m',
+   'magenta' :  '\u001b[44m',
+   'cyan': '\u001b[46m',
+   'white': '\u001b[47m'
 }
 
-exports.reset = function(){
-    return '\u001b[0m'
+const reset = '\u001b[0m'
+
+const header ={
+   'info':  ` \u001b[42m INFO \u001b[0m `,
+   'warn':  ` \u001b[43m WARN \u001b[0m `,
+   'error':  ` \u001b[41m ERROR \u001b[0m `
 }
 
-exports.header = function(col){
-    switch(col.toLowerCase()){
-        case 'info':
-            return `[\u001b[32mINFO\u001b[0m]`;
-        case 'warn':
-            return `[\u001b[33mWARN\u001b[0m]`;
-        case 'error':
-            return `[\u001b[31mERROR\u001b[0m]`;
-    }
-}
+exports.chcol = color;
+exports.bgcolor = bgcolor;
+exports.reset = reset;
+exports.header = header;
