@@ -4,11 +4,11 @@ created by huda0209
 discord-bot v2 for discord bot 
 
 main.js :MAIN  'MAIN CODE'
- -msgEvent.js :CLASS  'liten some event and sort the task'  <= this
+ -msgEvent.js :module  'liten some event and sort the task'  <= this
  
 ran by node.js
 
-2020-9-6
+2020-10-11
 
 */
 
@@ -21,22 +21,10 @@ const letter = [[":zero:","0⃣"],[":one:","1⃣"],[":two:","2⃣"],[":three:","
 */
 
 
-class msgEvent {
-    constructor(client,message,json) {
-        this.client = client;
-        this.message = message;
-        this.json = json;
-    }
-
-    async msgEvent ([command, ...args]){
-        const client = this.client;
-        const message = this.message;
-        const json = this.json;
-
-        if (message.content === '!ping') {
-            message.channel.send('Pong.');
-        }
+const msgEvent = async function ([command, ...args],message,guildData,BOT_DATA,client){
+    if (command === 'ping') {
+        message.channel.send('Pong.');
     }
 }
 
-module.exports = msgEvent
+exports.msgEvent = msgEvent
