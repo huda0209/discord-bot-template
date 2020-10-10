@@ -4,11 +4,11 @@ created by huda0209
 discord bot for discord bot 
 
 main.js :MAIN  'MAIN CODE'　<= this
- -msgEvent.js :CLASS  'liten some event'
+ -msgEvent.js :module  'liten some event'
  
 ran by node.js
 
-2020-10-4
+2020-10-11
 
 */
 
@@ -16,22 +16,21 @@ ran by node.js
 const fs = require('fs');
 const discord = require("discord.js");
 
-//class
+//module
 const msgEvent = require('./src/msgEvent.js')
 
+//config
+const BOT_DATA = JSON.parse(fs.readFileSync('./config/setting.json','utf8'));
+
 //other 
-const option = {ws: {intents: discord.Intents.ALL}};
-const json = JSON.parse(fs.readFileSync('./config/setting.json','utf8'));
-const client = new discord.Client(option);
-const color = require('./src/color');
-const PREFIX = json.PREFIX;
-const letter = [[":zero:","0⃣"],[":one:","1⃣"],[":two:","2⃣"],[":three:","3⃣"],[":four:","4⃣"],[":five:","5⃣"],[":six:","6⃣"],[":seven:","7⃣"],[":eight:","8⃣"],[":nine:","9⃣"],[":keycap_ten:","🔟"],[":regional_indicator_a:","🇦"],[":regional_indicator_b:","🇧"],[":regional_indicator_c:","🇨"],[":regional_indicator_d:","🇩"],[":regional_indicator_e:","🇪"],[":regional_indicator_f:","🇫"],[":regional_indicator_g:","🇬"],[":regional_indicator_h:","🇭"],[":regional_indicator_i:","🇮"],[":regional_indicator_j:","🇯"],[":regional_indicator_k:","🇰"],[":regional_indicator_l:","🇱"],[":regional_indicator_m:","🇲"],[":regional_indicator_n:","🇳"],[":regional_indicator_o:","🇴"],[":regional_indicator_p:","🇵"],[":regional_indicator_q:","🇶"],[":regional_indicator_r:","🇷"],[":regional_indicator_s:","🇸"],[":regional_indicator_t:","🇹"],[":regional_indicator_u:","🇺"],[":regional_indicator_v:","🇻"],[":regional_indicator_w:","🇼"],[":regional_indicator_x:","🇽"],[":regional_indicator_y:","🇾"],[":regional_indicator_z:","🇿"]]
+const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
+const logger = require('./src/util/logger')
 
 
 //start the bot
 client.on("ready", message => {
-  console.log(`${color.header.info}bot is ready! ver. ${json.VERSION} \n        login: ${color.chcol.cyan}${client.user.tag}${color.reset}\n`);
-  client.user.setActivity(`${PREFIX}helpでヘルプを表示 ver. ${json.VERSION}`, { type: 'PLAYING' });
+  logger.info(`bot is ready! ver. ${BOT_DATA.VERSION} \n        login: {cyan}${client.user.tag}{reset}\n`);
+  client.user.setActivity(`${BOT_DATA.PREFIX}helpでヘルプを表示 ver. ${BOT_DATA.VERSION}`, { type: 'PLAYING' });
 });
 
 //when bot join the guild, this event will load
@@ -40,7 +39,7 @@ client.on("guildCreate", bot =>{
                 "GuildName" : bot.name,
                 "Owner" : bot.ownerID};
   fs.writeFileSync(`./config/guild/${bot.id}.json`, JSON.stringify(DATA, null, '\t'),'utf8');
-  console.log(`${color.header.info}guildCreate catch`);
+  logger.info(`guildCreate catch`);
   })
 
 //guild update event
@@ -48,27 +47,29 @@ client.on("guildUpdate", bot =>{
   let DATA = JSON.parse(fs.readFileSync(`./config/guild/${bot.id}.json`,'utf8'));
   DATA.GuildName = bot.members.guild.name;
   fs.writeFileSync(`./config/guild/${bot.id}.json`,JSON.stringify(DATA, null, '\t'),'utf8');
-  console.log(`${color.header.info}guildUpdate catch`);
+  logger.info(`guildUpdate catch`);
 })
 
 //message event
 client.on("message", async message => {
-  let DATA;
+  let guildDATA;
   try{
-    DATA = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
+    guildDATA = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
   }catch (error){
-    console.log(`${color.header.error}fail to load guild file \n${error}\n`);
+    logger.error(`fail to load guild file \n${error}\n`);
     return};
-  if (message.content.startsWith(PREFIX)){
-    const [command, ...args] = message.content.slice(PREFIX.length).split(' ');
+
+  if (message.content.startsWith(BOT_DATA.PREFIX)){
+    const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');
 
     if(command === "stop" &&(message.author.id === message.guild.ownerID)){
-      console.log(`${color.header.info}server was stoped by ${message.author.tag}\n`);
+      logger.info(`server was stoped by {cyan}${message.author.tag}`);
       await message.delete();
       client.destroy();
       process.exit(0)};
-
-//write command code here
+    
+      //write command code here
+      msgEvent.msgEvent([command, ...args],message,guildData,BOT_DATA,client)
   };
 
 //write other processing
@@ -92,26 +93,31 @@ client.on("messageReactionAdd", async(messageReaction ,user) =>{
 })    
 
 
-if(json.MAIN_TOKEN == undefined || json.MAIN_TOKEN == ""){
-  console.log(`${color.header.error}please set setting.json : ${color.chcol.cyan}MAIN_TOKEN${color.reset}`);
-  process.exit(0);
-}
+if(BOT_DATA.MAIN_TOKEN == undefined || BOT_DATA.MAIN_TOKEN == ""){
+  logger.error(`please set setting.json : {cyan}MAIN_TOKEN`);
+  process.exit(0)};
+if(BOT_DATA.PREFIX == undefined || BOT_DATA.PREFIX == ""){
+  logger.error(`please set setting.json : {cyan}PREFIX`);
+  process.exit(0)};
+if(BOT_DATA.VERSION == undefined || BOT_DATA.VERSION == ""){
+  logger.error(`please set setting.json : {cyan}VERSION`);
+  process.exit(0)};
 let token;
 if(process.argv.length>=3){
   switch(process.argv[2]){
     case "main" :
-      token = json.MAIN_TOKEN;
+      token = BOT_DATA.MAIN_TOKEN;
       break;
     case "div" :
-      if(json.DIV_TOKEN == undefined || json.DIV_TOKEN == ""){
-        console.log(`${color.header.error}please set setting.json : ${color.chcol.cyan}DIV_TOKEN${color.reset}`);
+      if(BOT_DATA.DIV_TOKEN == undefined || BOT_DATA.DIV_TOKEN == ""){
+        logger.error(`please set setting.json : {cyan}DIV_TOKEN`);
         process.exit(0)};
-      token = json.DIV_TOKEN;
-      json.VERSION = `dev(${json.VERSION})`;
+      token = BOT_DATA.DIV_TOKEN;
+      BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
       break;
     default :
-      console.log(`${color.header.error}Unknown command. \n${color.chcol.cyan}Usage${color.reset} \n node main.js main : use main token \n node main.js div : use divelopment token`);
+      logger.error(`Unknown command. \nUsage \n node main.js main : use main token \n node main.js div : use divelopment token`);
       process.exit(0);
   };
-}else token = json.MAIN_TOKEN;
+}else token = BOT_DATA.MAIN_TOKEN;
 client.login(token);
