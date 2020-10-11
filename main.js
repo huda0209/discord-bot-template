@@ -17,7 +17,7 @@ const fs = require('fs');
 const discord = require("discord.js");
 
 //module
-const msgEvent = require('./src/msgEvent.js')
+const commandHandler = require('./src/command-handler.js');
 
 //config
 const BOT_DATA = JSON.parse(fs.readFileSync('./config/setting.json','utf8'));
@@ -52,9 +52,9 @@ client.on("guildUpdate", bot =>{
 
 //message event
 client.on("message", async message => {
-  let guildDATA;
+  let guildData;
   try{
-    guildDATA = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
+    guildData = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
   }catch (error){
     logger.error(`fail to load guild file \n${error}\n`);
     return};
@@ -69,7 +69,7 @@ client.on("message", async message => {
       process.exit(0)};
     
       //write command code here
-      msgEvent.msgEvent([command, ...args],message,guildData,BOT_DATA,client)
+      commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
   };
 
 //write other processing
@@ -116,7 +116,7 @@ if(process.argv.length>=3){
       BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
       break;
     default :
-      logger.error(`Unknown command. \nUsage \n node main.js main : use main token \n node main.js div : use divelopment token`);
+      logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
       process.exit(0);
   };
 }else token = BOT_DATA.MAIN_TOKEN;
