@@ -6,29 +6,29 @@ created by huda0209
  
 ran by node.js
 
-2020-10-10
+2020-10-11
 
 */
 
 const color = require('../util/color.js')
 
 function color_replace(content){
-   content = content.replace('{black}', color.chcol.black );
-   content = content.replace('{red}', color.chcol.red );
-   content = content.replace('{green}', color.chcol.green );
-   content = content.replace('{yellow}', color.chcol.yellow );
-   content = content.replace('{magenta}', color.chcol.magenta );
-   content = content.replace('{cyan}', color.chcol.cyan );
-   content = content.replace('{white}', color.chcol.white );
+   content = content.replace(/{black}/g, color.chcol.black );
+   content = content.replace(/{red}/g, color.chcol.red );
+   content = content.replace(/{green}/g, color.chcol.green );
+   content = content.replace(/{yellow}/g, color.chcol.yellow );
+   content = content.replace(/{magenta}/g, color.chcol.magenta );
+   content = content.replace(/{cyan}/g, color.chcol.cyan );
+   content = content.replace(/{white}/g, color.chcol.white );
 
-   content = content.replace('{bdblack}', color.bgcolor.black );
-   content = content.replace('{bdred}', color.bgcolor.red );
-   content = content.replace('{bdgreen}', color.bgcolor.green );
-   content = content.replace('{bgyellow}', color.bgcolor.yellow );
-   content = content.replace('{bdmagenta}', color.bgcolor.magenta );
-   content = content.replace('{bdcyan}', color.bgcolor.cyan );
-   content = content.replace('{bdwhite}', color.bgcolor.white );
-   content = content.replace('{reset}', color.reset);
+   content = content.replace(/{bdblack}/g, color.bgcolor.black );
+   content = content.replace(/{bdred}/g, color.bgcolor.red );
+   content = content.replace(/{bdgreen}/g, color.bgcolor.green );
+   content = content.replace(/{bgyellow}/g, color.bgcolor.yellow );
+   content = content.replace(/{bdmagenta}/g, color.bgcolor.magenta );
+   content = content.replace(/{bdcyan}/g, color.bgcolor.cyan );
+   content = content.replace(/{bdwhite}/g, color.bgcolor.white );
+   content = content.replace(/{reset}/g, color.reset);
    return content
 }
 
