@@ -11,6 +11,7 @@ ran by node.js
 2020-10-11
 
 */
+'use strict'
 
 //node.js modules
 const fs = require('fs');
@@ -25,7 +26,7 @@ const BOT_DATA = JSON.parse(fs.readFileSync('./config/setting.json','utf8'));
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
 const logger = require('./src/util/logger')
-
+const configChecker = require('./src/util/config')
 
 //start the bot
 client.on("ready", message => {
@@ -92,16 +93,7 @@ client.on("messageReactionAdd", async(messageReaction ,user) =>{
 //when member add reaction
 })    
 
-
-if(BOT_DATA.MAIN_TOKEN == undefined || BOT_DATA.MAIN_TOKEN == ""){
-  logger.error(`please set setting.json : {cyan}MAIN_TOKEN`);
-  process.exit(0)};
-if(BOT_DATA.PREFIX == undefined || BOT_DATA.PREFIX == ""){
-  logger.error(`please set setting.json : {cyan}PREFIX`);
-  process.exit(0)};
-if(BOT_DATA.VERSION == undefined || BOT_DATA.VERSION == ""){
-  logger.error(`please set setting.json : {cyan}VERSION`);
-  process.exit(0)};
+configChecker.check(BOT_DATA);
 let token;
 if(process.argv.length>=3){
   switch(process.argv[2]){
@@ -109,9 +101,7 @@ if(process.argv.length>=3){
       token = BOT_DATA.MAIN_TOKEN;
       break;
     case "div" :
-      if(BOT_DATA.DIV_TOKEN == undefined || BOT_DATA.DIV_TOKEN == ""){
-        logger.error(`please set setting.json : {cyan}DIV_TOKEN`);
-        process.exit(0)};
+      configChecker.divCheck(BOT_DATA);
       token = BOT_DATA.DIV_TOKEN;
       BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
       break;
