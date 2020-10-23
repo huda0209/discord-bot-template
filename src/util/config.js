@@ -9,6 +9,7 @@ ran by node.js
 2020-10-23
 
 */
+'use strict'
 
 const logger = require('./logger')
 
