@@ -9,7 +9,7 @@ huda0209式 discord botのテンプレート
 赤枠内のチェックボタンをオンにする<br>
 4. config内の`setting.json`にトークンをセット(MAIN_TOKENはメイン使用 DIV_TOKENはテスト用)
 5. ```node main.js main```でメイントークンでbotログイン<br>
-```node main.js test```でディベロプトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
+```node main.js div```でディベロプトークンでbotログイン(第三引数を指定しない場合はメイントークンでログインします。)
 
 ## その他
 ready, guildCreate, guildUpdate, guildMemberAdd, message, guildMemberUpdate, messageReactionAdd のイベント呼び出しコードを書いています。<br>
