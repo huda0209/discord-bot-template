@@ -8,7 +8,7 @@ main.js :MAIN  'MAIN CODE'　<= this
  
 ran by node.js
 
-2020-10-11
+2020-10-31
 
 */
 'use strict'
@@ -21,57 +21,50 @@ const discord = require("discord.js");
 const commandHandler = require('./src/command-handler.js');
 
 //config
-const BOT_DATA = JSON.parse(fs.readFileSync('./config/setting.json','utf8'));
+let guildData = JSON.parse(fs.readFileSync('./config/guild/guildData.json','utf8'));
+const BOT_DATA = require('./config/setting.json');
 
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
-const logger = require('./src/util/logger')
-const configChecker = require('./src/util/config')
+const logger = require('./src/util/logger');
+const configChecker = require('./src/util/config');
 
 //start the bot
 client.on("ready", message => {
-  logger.info(`bot is ready! ver. ${BOT_DATA.VERSION} \n        login: {cyan}${client.user.tag}{reset}\n`);
-  client.user.setActivity(`${BOT_DATA.PREFIX}helpでヘルプを表示 ver. ${BOT_DATA.VERSION}`, { type: 'PLAYING' });
+	logger.info(`bot is ready! ver. ${BOT_DATA.VERSION} \n        login: {cyan}${client.user.tag}{reset}\n`);
+  	client.user.setActivity(`${BOT_DATA.PREFIX}helpでヘルプを表示 ver. ${BOT_DATA.VERSION}`, { type: 'PLAYING' });
 });
 
 //when bot join the guild, this event will load
 client.on("guildCreate", bot =>{
-  const DATA = {"GuildId" : bot.id,
-                "GuildName" : bot.name,
-                "Owner" : bot.ownerID};
-  fs.writeFileSync(`./config/guild/${bot.id}.json`, JSON.stringify(DATA, null, '\t'),'utf8');
-  logger.info(`guildCreate catch`);
-  })
+  	const DATA = {"GuildId" : bot.id,
+  	              "GuildName" : bot.name,
+  	              "Owner" : bot.ownerID};
+  	fs.writeFileSync(`./config/guild/guildData.json`, JSON.stringify(DATA, null, '\t'),'utf8');
+  	logger.info(`guildCreate catch`);
+})
 
 //guild update event
 client.on("guildUpdate", bot =>{
-  let DATA = JSON.parse(fs.readFileSync(`./config/guild/${bot.id}.json`,'utf8'));
-  DATA.GuildName = bot.members.guild.name;
-  fs.writeFileSync(`./config/guild/${bot.id}.json`,JSON.stringify(DATA, null, '\t'),'utf8');
-  logger.info(`guildUpdate catch`);
+  	DATA.GuildName = bot.members.guild.name;
+  	fs.writeFileSync(`./config/guild/guildData.json`,JSON.stringify(DATA, null, '\t'),'utf8');
+  	logger.info(`guildUpdate catch`);
 })
 
 //message event
 client.on("message", async message => {
-  let guildData;
-  try{
-    guildData = JSON.parse(fs.readFileSync(`./config/guild/${message.guild.id}.json`,'utf8'));
-  }catch (error){
-    logger.error(`fail to load guild file \n${error}\n`);
-    return};
+  	if (message.content.startsWith(BOT_DATA.PREFIX)){
+    	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');
 
-  if (message.content.startsWith(BOT_DATA.PREFIX)){
-    const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');
-
-    if(command === "stop" &&(message.author.id === message.guild.ownerID)){
-      logger.info(`server was stoped by {cyan}${message.author.tag}`);
-      await message.delete();
-      client.destroy();
-      process.exit(0)};
+    	if(command === "stop" &&(message.author.id === message.guild.ownerID)){
+    	  	logger.info(`server was stoped by {cyan}${message.author.tag}`);
+    	  	await message.delete();
+    	  	client.destroy();
+    	  	process.exit(0)};
     
-      //write command code here
-      commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
-  };
+      	//write command code here
+      	commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
+  	};
 
 //write other processing
 
@@ -89,25 +82,25 @@ client.on("guildMemberUpdate", async (olduser,newuser) =>{
 
 
 client.on("messageReactionAdd", async(messageReaction ,user) =>{
-  if(user.bot) return;
+  	if(user.bot) return;
 //when member add reaction
 })    
 
 configChecker.check(BOT_DATA);
 let token;
 if(process.argv.length>=3){
-  switch(process.argv[2]){
-    case "main" :
-      token = BOT_DATA.MAIN_TOKEN;
-      break;
-    case "div" :
-      configChecker.divCheck(BOT_DATA);
-      token = BOT_DATA.DIV_TOKEN;
-      BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
-      break;
-    default :
-      logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
-      process.exit(0);
-  };
+  	switch(process.argv[2]){
+  	  	case "main" :
+  	    	token = BOT_DATA.MAIN_TOKEN;
+  	    	break;
+  	  	case "div" :
+  	    	configChecker.divCheck(BOT_DATA);
+  	    	token = BOT_DATA.DIV_TOKEN;
+  	    	BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
+  	    	break;
+  	  	default :
+  	    	logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
+  	    	process.exit(0);
+  	};
 }else token = BOT_DATA.MAIN_TOKEN;
 client.login(token);
