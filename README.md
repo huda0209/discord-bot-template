@@ -20,7 +20,7 @@ messageイベントにはストップ機能とコマンドハンドラを実装�
 ## カラーコンソールの使い方
 `logger.info`と入力し、引数にログの内容を設定すると以下のようにログの最初に INFO と表示されます。
 ![discord-div_console-sample.png](https://github.com/huda0209/resource/blob/master/discord-bot-template/discord-div_console-sample.png)<br>
-info warn error debugの4つが最初に表示可能です。
+info warn errorの3つが最初に表示可能です。
 また、引数内に`{green}`というように設定するとそれより後ろの文字が装飾されます。
 - 文字色変更一覧
 {black} {red} {green} {yellow} {magenta} {cyan} {white}
