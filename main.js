@@ -1,14 +1,16 @@
 /*
 
 created by huda0209
-discord bot for discord bot 
+discord-bot for discord bot 
 
-main.js :MAIN  'MAIN CODE'　<= this
- -msgEvent.js :module  'liten some event'
+main.js :MAIN  'MAIN CODE'
+ -command-handler.js :module  <= this
+ -admin.js :module
+
  
 ran by node.js
 
-2020-10-31
+2020-12-29
 
 */
 'use strict'
@@ -20,14 +22,15 @@ const discord = require("discord.js");
 //module
 const commandHandler = require('./src/command-handler.js');
 
-//config
-let guildData = JSON.parse(fs.readFileSync('./config/guild/guildData.json','utf8'));
-const BOT_DATA = require('./config/setting.json');
-
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
 const logger = require('./src/util/logger');
 const configChecker = require('./src/util/config');
+
+//config
+let guildData = configChecker.getConfig()
+const BOT_DATA = configChecker.getBotData()
+
 
 //start the bot
 client.on("ready", message => {
@@ -36,33 +39,30 @@ client.on("ready", message => {
 });
 
 //when bot join the guild, this event will load
-client.on("guildCreate", bot =>{
-  	const DATA = {"GuildId" : bot.id,
-  	              "GuildName" : bot.name,
-  	              "Owner" : bot.ownerID};
+client.on("guildCreate", guild  =>{
+  	const DATA = {
+		  	"GuildId" : guild.id,
+  	        "GuildName" : guild.name,
+			"Owner" : guild.ownerID,
+			"Admin" : []
+		};
+
   	fs.writeFileSync(`./config/guild/guildData.json`, JSON.stringify(DATA, null, '\t'),'utf8');
   	logger.info(`guildCreate catch`);
 })
 
 //guild update event
-client.on("guildUpdate", bot =>{
-  	DATA.GuildName = bot.members.guild.name;
-  	fs.writeFileSync(`./config/guild/guildData.json`,JSON.stringify(DATA, null, '\t'),'utf8');
+client.on("guildUpdate", (beforeGuild, afterGuild) =>{
+	guildData.GuildName = afterGuild.name;
+	guildData.Owner = afterGuild.ownerID
+  	fs.writeFileSync(`./config/guild/guildData.json`,JSON.stringify(guildData, null, '\t'),'utf8');
   	logger.info(`guildUpdate catch`);
 })
 
 //message event
 client.on("message", async message => {
   	if (message.content.startsWith(BOT_DATA.PREFIX)){
-    	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');
-
-    	if(command === "stop" &&(message.author.id === message.guild.ownerID)){
-    	  	logger.info(`server was stoped by {cyan}${message.author.tag}`);
-    	  	await message.delete();
-    	  	client.destroy();
-    	  	process.exit(0)};
-    
-      	//write command code here
+    	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');   
       	commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
   	};
 
@@ -86,9 +86,8 @@ client.on("messageReactionAdd", async(messageReaction ,user) =>{
 //when member add reaction
 })    
 
-configChecker.check(BOT_DATA);
 let token;
-if(process.argv.length>=3){
+if(process.argv.length == 3){
   	switch(process.argv[2]){
   	  	case "main" :
   	    	token = BOT_DATA.MAIN_TOKEN;
@@ -102,5 +101,10 @@ if(process.argv.length>=3){
   	    	logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
   	    	process.exit(0);
   	};
-}else token = BOT_DATA.MAIN_TOKEN;
+}else if(process.argv.length == 2){
+	token = BOT_DATA.MAIN_TOKEN;
+}else{
+	logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
+	process.exit(0);
+}
 client.login(token);
