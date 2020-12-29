@@ -3,10 +3,11 @@
 created by huda0209
 
  -logger.js :module
+  ver. 2.0.1
  
 ran by node.js
 
-2020-10-11
+2020-12-29
 
 */
 'use strict'
@@ -46,23 +47,15 @@ const info = function(content){
 
 const warn = function(content){
    if(contentChecker(content)) content = color_replace(content);
-   content = color_replace(content);
    console.log(`${color.header.warn}${content}${color.reset}`);
 };
 
 const error = function(content){
    if(contentChecker(content))content = color_replace(content);
-   content = color_replace(content);
    console.log(`${color.header.error}${content}${color.reset}`);
-};
-
-const debug = function(content){
-   if(contentChecker(content)) content = color_replace(content);
-   console.log(` ${color.bgcolor.white}${color.chcol.magenta} DEBUG ${color.reset} ${content}${color.reset}`);
 };
 
 
 exports.info = info;
 exports.warn = warn;
 exports.error = error;
-exports.debug = debug;
