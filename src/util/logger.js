@@ -3,14 +3,16 @@
 created by huda0209
 
  -logger.js :module
-  ver. 2.0.1
+  ver. 3.0.0
  
 ran by node.js
 
-2020-12-29
+2021-4-14
 
 */
 'use strict'
+
+const version = "3.0.0";
 
 const color = require('../util/color.js')
 
@@ -59,3 +61,33 @@ const error = function(content){
 exports.info = info;
 exports.warn = warn;
 exports.error = error;
+
+
+
+//verison checker
+(function(){
+   const request = require("request");
+
+   let OriginalVersion;
+
+   const options = {
+      url : "https://raw.githubusercontent.com/huda0209/Versions/main/UtilsVersion.json",
+      method : "GET"
+   };
+
+   request(options, (error, response, body)=>{
+      if(error){
+         error("{red}failed to run https request.");
+         console.log(error);
+      };
+
+      try{
+         OriginalVersion = JSON.parse(body).logger;
+      }catch(e){
+         error("{red}failed to parse text to json.");
+         console.log(e);
+      };
+
+      if(OriginalVersion != version) warn(`{cyan}"logger.js"{reset} has an {green}update{reset}. {red}${version}{reset}(now)=>{green}${OriginalVersion}{reset}(new)`);
+   });
+}());
