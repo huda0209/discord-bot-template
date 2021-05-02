@@ -3,14 +3,14 @@
 created by huda0209
 
  -color.js :module
-  ver. 2.0.0
+  ver. 2.0.1
  
 ran by node.js
 
 2021-4-14
 
 */
-const version = "2.0.0";
+const version = "2.0.1";
 
 
 const color = {
@@ -50,7 +50,6 @@ exports.header = header;
 //verison checker
 (function(){
    const request = require("request");
-   const logger = require("./logger");
 
    let OriginalVersion;
 
@@ -61,17 +60,19 @@ exports.header = header;
 
    request(options, (error, response, body)=>{
       if(error){
-         logger.error("{red}failed to run https request.");
+         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to run https request.\u001b[0m`);
          console.log(error);
+         return;
       };
 
       try{
          OriginalVersion = JSON.parse(body).color;
       }catch(e){
-         logger.error("{red}failed to parse text to json.");
+         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to parse text to json.\u001b[0m`);
          console.log(e);
+         return;
       };
 
-      if(OriginalVersion != version) logger.warn(`{cyan}"color.js"{reset} has an {green}update{reset}. {red}${version}{reset}(now)=>{green}${OriginalVersion}{reset}(new)`);
+      if(OriginalVersion != version) console.log(` \u001b[43m WARN \u001b[0m \u001b[36m"color.js"\u001b[0m has an \u001b[32mupdate\u001b[0m. \u001b[41m${version}\u001b[0m(now)=>\u001b[32m${OriginalVersion}\u001b[0m(new)\u001b[0m`);
    });
 }());
