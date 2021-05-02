@@ -3,7 +3,7 @@
 created by huda0209
 
  -logger.js :module
-  ver. 3.0.0
+  ver. 3.0.1
  
 ran by node.js
 
@@ -12,9 +12,9 @@ ran by node.js
 */
 'use strict'
 
-const version = "3.0.0";
+const version = "3.0.1";
 
-const color = require('../util/color.js')
+const color = require('./color.js')
 
 function color_replace(content){
    content = content.replace(/{black}/g, color.chcol.black );
@@ -77,17 +77,19 @@ exports.error = error;
 
    request(options, (error, response, body)=>{
       if(error){
-         error("{red}failed to run https request.");
+         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to run https request.\u001b[0m`);
          console.log(error);
+         return;
       };
 
       try{
          OriginalVersion = JSON.parse(body).logger;
       }catch(e){
-         error("{red}failed to parse text to json.");
+         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to parse text to json.\u001b[0m`);
          console.log(e);
+         return;
       };
 
-      if(OriginalVersion != version) warn(`{cyan}"logger.js"{reset} has an {green}update{reset}. {red}${version}{reset}(now)=>{green}${OriginalVersion}{reset}(new)`);
+      if(OriginalVersion != version) console.log(` \u001b[43m WARN \u001b[0m \u001b[36m"logger.js"\u001b[0m has an \u001b[32mupdate\u001b[0m. \u001b[41m${version}\u001b[0m(now)=>\u001b[32m${OriginalVersion}\u001b[0m(new)\u001b[0m`);
    });
 }());
