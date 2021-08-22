@@ -24,7 +24,7 @@ const commandHandler = require('./src/command-handler.js');
 
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
-const logger = require('./src/util/logger');
+const logger = require('./src/util/logFile');
 const configChecker = require('./src/util/config');
 
 //config
@@ -65,6 +65,7 @@ client.on("message", async message => {
     	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');   
       	commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
   	};
+	
 
 //write other processing
 
