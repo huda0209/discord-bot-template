@@ -70,26 +70,25 @@ client.on("message", async message => {
       	commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
   	};
 	
-
-//write other processing
+	//write other processing
 
 })
 
-
 client.on('guildMemberAdd', member => {
-//When member enter the guild, this event will load
-});
+	//When member enter the guild, this event will load
+})
 
 
 client.on("guildMemberUpdate", async (olduser,newuser) =>{
-//When member update(nickname, role ...)
+	//When member update(nickname, role ...)
 })
 
 
 client.on("messageReactionAdd", async(messageReaction ,user) =>{
   	if(user.bot) return;
-//when member add reaction
+	//when member add reaction
 })    
+
 
 let token;
 if(process.argv.length == 3){
@@ -120,5 +119,5 @@ client.login(token)
 		logger.info(`Succeed to login the discord service.`);
 	})
 	.catch(error=>{
-		logger.error(`Could not login the discord service.\n${error}`)
+		logger.error(`Could not login the discord service.\n${error}`);
 	});
