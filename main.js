@@ -10,7 +10,7 @@ main.js :MAIN  'MAIN CODE'
  
 ran by node.js
 
-2021-8-24
+2021-8-25
 
 */
 'use strict'
@@ -30,6 +30,7 @@ const config = require('./src/util/config');
 
 logger.info(`This service is standing now...`);
 process.on("exit", ()=>{
+	client.destroy();
     logger.info(`service end.`);
     logger.hasLastLog();
     console.log("Exitting...");
@@ -114,4 +115,10 @@ if(process.argv.length == 3){
 	logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
 	process.exit(0);
 }
-client.login(token);
+client.login(token)
+	.then(res=>{
+		logger.info(`Succeed to login the discord service.`);
+	})
+	.catch(error=>{
+		logger.error(`Could not login the discord service.\n${error}`)
+	});
