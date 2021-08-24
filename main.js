@@ -28,6 +28,16 @@ const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
 const logger = require('./src/util/logFile');
 const config = require('./src/util/config');
 
+logger.info(`This service is standing now...`);
+process.on("exit", ()=>{
+    logger.info(`service end.`);
+    logger.hasLastLog();
+    console.log("Exitting...");
+});
+process.on("SIGINT", ()=>{
+    process.exit(0);
+});
+
 //config
 config.exist(true);
 const BOT_DATA = config.loadConfig("setting.json");
