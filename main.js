@@ -10,7 +10,7 @@ main.js :MAIN  'MAIN CODE'
  
 ran by node.js
 
-2020-12-29
+2021-8-24
 
 */
 'use strict'
@@ -18,6 +18,7 @@ ran by node.js
 //node.js modules
 const fs = require('fs');
 const discord = require("discord.js");
+require('date-utils');
 
 //module
 const commandHandler = require('./src/command-handler.js');
@@ -25,11 +26,12 @@ const commandHandler = require('./src/command-handler.js');
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
 const logger = require('./src/util/logFile');
-const configChecker = require('./src/util/config');
+const config = require('./src/util/config');
 
 //config
-let guildData = configChecker.getConfig()
-const BOT_DATA = configChecker.getBotData()
+config.exist(true);
+const BOT_DATA = config.loadConfig("setting.json");
+let guildData = config.loadConfig("guildData.json");
 
 
 //start the bot
@@ -40,22 +42,13 @@ client.on("ready", message => {
 
 //when bot join the guild, this event will load
 client.on("guildCreate", guild  =>{
-  	const DATA = {
-		  	"GuildId" : guild.id,
-  	        "GuildName" : guild.name,
-			"Owner" : guild.ownerID,
-			"Admin" : []
-		};
-
+	guildData.GuildId = guild.id;
   	fs.writeFileSync(`./config/guild/guildData.json`, JSON.stringify(DATA, null, '\t'),'utf8');
   	logger.info(`guildCreate catch`);
 })
 
 //guild update event
 client.on("guildUpdate", (beforeGuild, afterGuild) =>{
-	guildData.GuildName = afterGuild.name;
-	guildData.Owner = afterGuild.ownerID
-  	fs.writeFileSync(`./config/guild/guildData.json`,JSON.stringify(guildData, null, '\t'),'utf8');
   	logger.info(`guildUpdate catch`);
 })
 
@@ -94,7 +87,10 @@ if(process.argv.length == 3){
   	    	token = BOT_DATA.MAIN_TOKEN;
   	    	break;
   	  	case "div" :
-  	    	configChecker.divCheck(BOT_DATA);
+  	    	if(!BOT_DATA.DIV_TOKEN){
+				logger.error(`Don't have a property "{red}DIV_TOKEN{reset}" in {green}setting.json{reset}.`);
+				process.exit(0);
+			}
   	    	token = BOT_DATA.DIV_TOKEN;
   	    	BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
   	    	break;
