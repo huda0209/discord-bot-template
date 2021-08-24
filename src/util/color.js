@@ -1,16 +1,16 @@
 /*
-
 created by huda0209
 
- -color.js :module
-  ver. 2.0.1
- 
+color.js :module
+ ver. 2.0.2
+
+depend: request
+
 ran by node.js
-
-2021-4-14
-
+2021-8-25
 */
-const version = "2.0.1";
+'use strict'
+const version = "2.0.2";
 
 
 const color = {

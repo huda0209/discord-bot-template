@@ -1,19 +1,24 @@
 /*
 created by huda0209
 
- -logFile.js :module  Create Log file.
- ver. 1.0.0
+logFile.js :module  Create Log file.
+ ver. 1.0.1
 
- depend : logger.js
+depend: logger.js
+        fs
+        date-utils
+        request
  
 ran by node.js
-2021-7-26
+2021-8-25
 */
-const version = "1.0.0";
+'use strict'
 
+const version = "1.0.1";
 
 const fs = require("fs");
-const logger = require("./logger");
+const logger = require("../util/logger");
+require('date-utils');
 
 function colorCode_remover(content){
     content = content.replace(/{black}/g, "");
@@ -51,6 +56,7 @@ function createlog(prefix,msg){
         fs.writeFileSync("./logs/latest.log",contents,"utf8");
     }else{
         contents = `[${prefix}  ${date}] ${msg}`;
+        if(!fs.existsSync("./logs")) fs.mkdirSync("./logs");
         fs.writeFileSync("./logs/latest.log",contents,"utf8");
     }
 }

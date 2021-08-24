@@ -1,18 +1,18 @@
 /*
-
 created by huda0209
 
- -logger.js :module
-  ver. 3.0.1
- 
+logger.js :module
+ ver. 3.0.2
+
+depend: color.js
+        request
+
 ran by node.js
-
-2021-4-14
-
+2021-8-25
 */
 'use strict'
 
-const version = "3.0.1";
+const version = "3.0.2";
 
 const color = require('./color.js')
 
