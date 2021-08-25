@@ -1,74 +1,72 @@
 /*
-
 created by huda0209
 
- -config.js :module  Check config data
- ver. 1.0.2
+config.js
  
 ran by node.js
-
-2020-12-29
-
+2021-8-22
 */
-'use strict'
-const fs = require('fs');
-const logger = require('./logger')
+const fs = require("fs");
+const log = require("./logFile");
 
-function getConfig(){
+function loadConfig(configName){
+    let resource = require("../../resource/resource");
+    if(!resource[configName]){
+        log.error(`can't find that file({red}${configName}{reset}).`);
+        return;
+    }
+    let result = true;
+
+    const data = JSON.parse(fs.readFileSync(resource[configName].pass,"utf-8"));
+
+    const NoKeyList = [];
+    for(const key in resource[configName].keys){
+            if(!resource[configName].keys[key].canEmpty) continue;
+            if(Object.hasOwnProperty.call(data, key)) continue;
+            log.error(`Don't have a property "{red}${key}{reset}" in {green}${configName}{reset}.`);
+            result = false;
+        
+    }
+    if(!result) process.exit();
+
+    for(const key in resource[configName].keys) {
+        if(Object.hasOwnProperty.call(data, key) && data[key]) continue;
+        if(!resource[configName].keys[key].replace) continue;
+        data[key] = resource[configName].keys[key].default;
+    }
+    log.info(`succeed to load "${configName}".`);
+    return data;
+}
+
+function exist(createMode){
+    let resource;
     try{
-        const guildData = JSON.parse(fs.readFileSync('./config/guild/guildData.json', 'utf8'));
-        return guildData;
+        resource = require("../../resource/resource");
     }catch(e){
-        logger.error(`Failed to load file! {cyan}guildData.json{reset} Please check config file.\nIf this code ran first time, this error can ignore.`);
-    };
+        log.error(e);
+        return false;
+    }
+    let result = false;
+
+    for(const key in resource){
+        if(fs.existsSync(resource[key].pass)){
+            result = true;
+            continue;
+        }
+        log.warn(`there is not "{red}${key}{reset}".`);
+
+        if(!createMode) continue;
+        try {
+            fs.copyFileSync(`./resource/${key}`, resource[key].pass, fs.constants.COPYFILE_EXCL);
+            log.info(`Succeed to create "{red}${key}{reset}".`);
+            result = true;
+        }catch(e) {
+            log.error(e);
+        }
+    }
+
+    return result;
 }
 
-function getBotData(){
-    try{
-        const BOT_DATA = JSON.parse(fs.readFileSync('./config/setting.json', 'utf8'));
-        check(BOT_DATA);
-        return BOT_DATA;
-    }catch(e){
-        logger.error(`Failed to load file! {cyan}setting.json{reset} Please check config file.`);
-        const DATA = {
-            "NAME" : "",
-            "MAIN_TOKEN" : "",
-            "DIV_TOKEN" : "",
-            "VERSION" : "0.0.0",
-            "PREFIX" : "/",
-            "COMMAND" : ""
-        };
-        fs.writeFileSync(`./config/setting.json`, JSON.stringify(DATA, null, '\t'),'utf8');
-        process.exit(0);
-    };
-}
-
-function check(config){
-    if(config.MAIN_TOKEN === null || config.MAIN_TOKEN === undefined || config.MAIN_TOKEN == ""){
-        logger.error(`please set setting.json : {cyan}MAIN_TOKEN`);
-        process.exit(0);
-    };
-    if(config.PREFIX === null || config.PREFIX === undefined || config.PREFIX == ""){
-        logger.error(`please set setting.json : {cyan}PREFIX`);
-        process.exit(0);
-    };
-    if(config.VERSION === null || config.VERSION === undefined || config.VERSION == ""){
-        logger.error(`please set setting.json : {cyan}VERSION`);
-        process.exit(0);
-    };
-    if(config.COMMAND === null || config.COMMAND === undefined || config.COMMAND == ""){
-        logger.error(`please set setting.json : {cyan}COMMAND`);
-        process.exit(0);
-    };
-}
-
-function divCheck(config){
-    if(config.DIV_TOKEN === null || config.DIV_TOKEN === undefined || config.DIV_TOKEN == ""){
-        logger.error(`please set setting.json : {cyan}DIV_TOKEN`);
-        process.exit(0);
-    };
-}
-
-exports.getBotData = getBotData;
-exports.getConfig = getConfig;
-exports.divCheck = divCheck;
+exports.exist = exist;
+exports.loadConfig = loadConfig;

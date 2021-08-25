@@ -10,7 +10,7 @@ main.js :MAIN  'MAIN CODE'
  
 ran by node.js
 
-2020-12-29
+2021-8-25
 
 */
 'use strict'
@@ -18,18 +18,31 @@ ran by node.js
 //node.js modules
 const fs = require('fs');
 const discord = require("discord.js");
+require('date-utils');
 
 //module
 const commandHandler = require('./src/command-handler.js');
 
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
-const logger = require('./src/util/logger');
-const configChecker = require('./src/util/config');
+const logger = require('./src/util/logFile');
+const config = require('./src/util/config');
+
+logger.info(`This service is standing now...`);
+process.on("exit", ()=>{
+	client.destroy();
+    logger.info(`service end.`);
+    logger.hasLastLog();
+    console.log("Exitting...");
+});
+process.on("SIGINT", ()=>{
+    process.exit(0);
+});
 
 //config
-let guildData = configChecker.getConfig()
-const BOT_DATA = configChecker.getBotData()
+config.exist(true);
+const BOT_DATA = config.loadConfig("setting.json");
+let guildData = config.loadConfig("guildData.json");
 
 
 //start the bot
@@ -40,22 +53,13 @@ client.on("ready", message => {
 
 //when bot join the guild, this event will load
 client.on("guildCreate", guild  =>{
-  	const DATA = {
-		  	"GuildId" : guild.id,
-  	        "GuildName" : guild.name,
-			"Owner" : guild.ownerID,
-			"Admin" : []
-		};
-
+	guildData.GuildId = guild.id;
   	fs.writeFileSync(`./config/guild/guildData.json`, JSON.stringify(DATA, null, '\t'),'utf8');
   	logger.info(`guildCreate catch`);
 })
 
 //guild update event
 client.on("guildUpdate", (beforeGuild, afterGuild) =>{
-	guildData.GuildName = afterGuild.name;
-	guildData.Owner = afterGuild.ownerID
-  	fs.writeFileSync(`./config/guild/guildData.json`,JSON.stringify(guildData, null, '\t'),'utf8');
   	logger.info(`guildUpdate catch`);
 })
 
@@ -65,26 +69,26 @@ client.on("message", async message => {
     	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');   
       	commandHandler.commandHandler([command, ...args],message,guildData,BOT_DATA,client)
   	};
-
-//write other processing
+	
+	//write other processing
 
 })
 
-
 client.on('guildMemberAdd', member => {
-//When member enter the guild, this event will load
-});
+	//When member enter the guild, this event will load
+})
 
 
 client.on("guildMemberUpdate", async (olduser,newuser) =>{
-//When member update(nickname, role ...)
+	//When member update(nickname, role ...)
 })
 
 
 client.on("messageReactionAdd", async(messageReaction ,user) =>{
   	if(user.bot) return;
-//when member add reaction
+	//when member add reaction
 })    
+
 
 let token;
 if(process.argv.length == 3){
@@ -93,7 +97,10 @@ if(process.argv.length == 3){
   	    	token = BOT_DATA.MAIN_TOKEN;
   	    	break;
   	  	case "div" :
-  	    	configChecker.divCheck(BOT_DATA);
+  	    	if(!BOT_DATA.DIV_TOKEN){
+				logger.error(`Don't have a property "{red}DIV_TOKEN{reset}" in {green}setting.json{reset}.`);
+				process.exit(0);
+			}
   	    	token = BOT_DATA.DIV_TOKEN;
   	    	BOT_DATA.VERSION = `dev(${BOT_DATA.VERSION})`;
   	    	break;
@@ -107,4 +114,10 @@ if(process.argv.length == 3){
 	logger.error(`Unknown command. \nUsage \n {green}node main.js main{reset} : use main token \n {green}node main.js div{reset} : use divelopment token`);
 	process.exit(0);
 }
-client.login(token);
+client.login(token)
+	.then(res=>{
+		logger.info(`Succeed to login the discord service.`);
+	})
+	.catch(error=>{
+		logger.error(`Could not login the discord service.\n${error}`);
+	});

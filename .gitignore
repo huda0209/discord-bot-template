@@ -1,7 +1,10 @@
 # Node modules
 /node_modules/
 
-#bot tokens
-setting.json
+#bots config
+./config
+
+#log files
+./logs/
 
 #test file
