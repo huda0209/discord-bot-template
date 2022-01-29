@@ -2,60 +2,62 @@
 
 created by huda0209
 discord-bot for discord bot 
-
-main.js :MAIN  'MAIN CODE'
- -command-handler.js :module  <= this
- -admin.js :module
-
  
 ran by node.js
 
-2020-12-29
+2022-1-29
 
 */
 
-const fs = require('fs');
-const logger =require('../../util/logger');
+"use strict"
 
+const logger =require('../util/logger');
+const configManager = require("../config/configManager");
+const embedContent = require("../util/embed");
 
-const adminManager = async function ([command, ...args],message,guildData,BOT_DATA,client){
+module.exports = async([command, ...args],message) => {
     switch(args[1].toLowerCase()){
         case "add" :
-            if(args.length<2) return message.channel.send(`コマンドの引数が足りません。`);
-            if(guildData.Admin.indexOf(message.mentions.members.first().id)>=0) return message.channel.send(`そのユーザーは追加済みです`);
-            guildData.Admin.push(message.mentions.members.first().id);
-            fs.writeFileSync('./config/guild/guildData.json', JSON.stringify(guildData, null, "\t"),'utf8')
+            if(args.length<2){
+                message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `引数が不足しています。\n実行例\`${configManager.getBotData("PREFIX")}${configManager.getBotData("COMMAND")} admin <add | delete | list> [user]\``));
+                return;
+            }
+            if(configManager.getGuildtData("Admin").indexOf(message.mentions.members.first().id)>=0){
+                message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `ユーザー<@${message.mentions.members.first().id}>は追加済みです。`));
+                return;
+            }
+            configManager.getGuildtData("Admin").push(message.mentions.members.first().id);
             logger.info(`Add admin {green}${message.mentions.members.first().user.tag}`);
-            message.channel.send(`ユーザーを追加しました`);
+            message.reply(embedContent.infoWithTitle(`✅コマンド実行成功`, `ユーザー<@${message.mentions.members.first().id}>をAdminに追加しました。`));
             break;
 
         case "delete" :
         case "del" :
-            if(args.length<2) return message.channel.send(`コマンドの引数が足りません。`);
-            if(guildData.Admin.indexOf(message.mentions.members.first().id)==-1) return message.channel.send(`そのユーザーはリストに入っていません`);
-            delete guildData.Admin[guildData.Admin.indexOf(message.mentions.members.first().id)];
-            guildData.Admin = guildData.Admin.filter(Boolean);
-            fs.writeFileSync('./config/guild/guildData.json', JSON.stringify(guildData, null, "\t"),'utf8')
+            if(args.length<2){
+                message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `引数が不足しています。\n実行例\`${configManager.getBotData("PREFIX")}${configManager.getBotData("COMMAND")} admin <add | delete | list> [user]\``));
+                return;
+            }
+            if(configManager.getGuildtData("Admin").indexOf(message.mentions.members.first().id)==-1){
+                message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `ユーザー<@${message.mentions.members.first().id}>はAdminではないため、削除できませんでした。`));
+                return;               
+            }
+            let adminList = configManager.getGuildtData("Admin");
+            delete adminList[adminList.indexOf(message.mentions.members.first().id)];
+            adminList = adminList.filter(Boolean);
+            configManager.setGuildtData("Admin", adminList);
             logger.info(`Remove admin {red}${message.mentions.members.first().user.tag}`);
-            message.channel.send(`ユーザーを削除しました`);
+            message.reply(embedContent.infoWithTitle(`✅コマンド実行成功`, `ユーザー<@${message.mentions.members.first().id}>をAdminから削除しました。`));
             break;
 
         case "list" :
-            let adminList = `**${BOT_DATA.NAME} Adminリスト**\nOwner : *${(await client.users.fetch(message.guild.ownerID)).tag}*\nAdmin :`;
-            if(guildData.Admin.length<1){
-                adminList = `${adminList} なし`;
-            }
-            for(let i=0;i<guildData.Admin.length;i++){
-                adminList = `${adminList}\n*${(await client.users.fetch(guildData.Admin[i])).tag}*`;
-            };
-            message.channel.send(adminList)
+            const adminLinkList = configManager.getGuildtData("Admin").map(key=>{
+                return `<@${key}>`;
+            });
+            message.reply(embedContent.infoWithTitle(`Adminリスト`, `${ adminLinkList.length>0? adminLinkList.join("\n") : "ユーザーはいません。"}`));
             break;
 
         default :
-            message.reply(`unknown command.`);
+            message.reply(embedContent.errorWithTitle(`❓コマンドがありません`, `実行したコマンドは登録されていません。`));
             break;
     };
 };
-
-
-exports.adminManager = adminManager
