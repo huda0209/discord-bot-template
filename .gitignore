@@ -2,9 +2,9 @@
 /node_modules/
 
 #bots config
-./config
+/config
 
 #log files
-./logs/
+/logs/
 
 #test file
