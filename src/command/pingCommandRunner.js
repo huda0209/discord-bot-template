@@ -1,14 +1,11 @@
 /*
 
 created by huda0209
-discord-bot v2 for discord bot 
-
-main.js :MAIN  'MAIN CODE'
- -msgEvent.js :module  'liten some event and sort the task'  <= this
+discord-bot for discord bot 
  
 ran by node.js
 
-2020-10-11
+2022-1-29
 
 */
 
@@ -20,9 +17,6 @@ const letter = [[":zero:","0⃣"],[":one:","1⃣"],[":two:","2⃣"],[":three:","
 */
 'use strict'
 
-const ping = async function ([command, ...args],message,guildData,BOT_DATA,client){
-    message.channel.send('Pong.');
-
+module.exports = async function ([command, ...args], message){
+    message.reply('Pong.');
 }
-
-exports.ping = ping
