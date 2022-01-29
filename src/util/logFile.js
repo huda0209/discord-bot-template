@@ -2,22 +2,22 @@
 created by huda0209
 
 logFile.js :module  Create Log file.
- ver. 1.0.1
+ ver. 1.0.3
 
 depend: logger.js
         fs
         date-utils
-        request
  
 ran by node.js
-2021-8-25
+2021-11-12
 */
 'use strict'
 
-const version = "1.0.1";
+const version = "1.0.3";
+exports.SourceInfo={name:"logFIle", version:"1.0.3", requrl:"UtilsVersion"};
 
 const fs = require("fs");
-const logger = require("../util/logger");
+const logger = require("./logger");
 require('date-utils');
 
 function colorCode_remover(content){
@@ -55,7 +55,7 @@ function createlog(prefix,msg){
 [${prefix}  ${date}] ${msg}`;
         fs.writeFileSync("./logs/latest.log",contents,"utf8");
     }else{
-        contents = `[${prefix}  ${date}] ${msg}`;
+        let contents = `[${prefix}  ${date}] ${msg}`;
         if(!fs.existsSync("./logs")) fs.mkdirSync("./logs");
         fs.writeFileSync("./logs/latest.log",contents,"utf8");
     }
@@ -63,17 +63,17 @@ function createlog(prefix,msg){
 
 function info(msg){
     logger.info(msg);
-    createlog("INFO ",colorCode_remover(msg));
+    createlog("INFO ", logger.contentChecker(msg)? colorCode_remover(msg) : msg);
 }
 
 function warn(msg){
     logger.warn(msg);
-    createlog("WARN ",colorCode_remover(msg));
+    createlog("WARN ", logger.contentChecker(msg)? colorCode_remover(msg) : msg);
 }
 
 function error(msg){
     logger.error(msg);
-    createlog("ERROR",colorCode_remover(msg));
+    createlog("ERROR", logger.contentChecker(msg)? colorCode_remover(msg) : msg);
 }
 
 exports.hasLastLog = hasLastLog;
@@ -81,34 +81,3 @@ exports.createlog = createlog;
 exports.info = info;
 exports.warn = warn;
 exports.error = error;
-
-
-//verison checker
-(function(){
-    const request = require("request");
- 
-    let OriginalVersion;
- 
-    const options = {
-       url : "https://raw.githubusercontent.com/huda0209/Versions/main/UtilsVersion.json",
-       method : "GET"
-    };
- 
-    request(options, (error, response, body)=>{
-       if(error){
-          console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to run https request.\u001b[0m`);
-          console.log(error);
-          return;
-       };
- 
-       try{
-          OriginalVersion = JSON.parse(body).logFIle;
-       }catch(e){
-          console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to parse text to json.\u001b[0m`);
-          console.log(e);
-          return;
-       };
- 
-       if(OriginalVersion != version) console.log(` \u001b[43m WARN \u001b[0m \u001b[36m"logFile.js"\u001b[0m has an \u001b[32mupdate\u001b[0m. \u001b[41m${version}\u001b[0m(now)=>\u001b[32m${OriginalVersion}\u001b[0m(new)\u001b[0m`);
-    });
- }());

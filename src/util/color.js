@@ -2,15 +2,13 @@
 created by huda0209
 
 color.js :module
- ver. 2.0.2
-
-depend: request
+ ver. 2.0.3
 
 ran by node.js
-2021-8-25
+2021-11-12
 */
 'use strict'
-const version = "2.0.2";
+exports.SourceInfo={name:"color", version:"2.0.3", requrl:"UtilsVersion"};
 
 
 const color = {
@@ -45,34 +43,3 @@ exports.chcol = color;
 exports.bgcolor = bgcolor;
 exports.reset = reset;
 exports.header = header;
-
-
-//verison checker
-(function(){
-   const request = require("request");
-
-   let OriginalVersion;
-
-   const options = {
-      url : "https://raw.githubusercontent.com/huda0209/Versions/main/UtilsVersion.json",
-      method : "GET"
-   };
-
-   request(options, (error, response, body)=>{
-      if(error){
-         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to run https request.\u001b[0m`);
-         console.log(error);
-         return;
-      };
-
-      try{
-         OriginalVersion = JSON.parse(body).color;
-      }catch(e){
-         console.log(` \u001b[41m ERROR \u001b[0m \u001b[31mFailed to parse text to json.\u001b[0m`);
-         console.log(e);
-         return;
-      };
-
-      if(OriginalVersion != version) console.log(` \u001b[43m WARN \u001b[0m \u001b[36m"color.js"\u001b[0m has an \u001b[32mupdate\u001b[0m. \u001b[41m${version}\u001b[0m(now)=>\u001b[32m${OriginalVersion}\u001b[0m(new)\u001b[0m`);
-   });
-}());
