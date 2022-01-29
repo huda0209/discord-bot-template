@@ -2,55 +2,70 @@
 
 created by huda0209
 discord-bot for discord bot 
-
-main.js :MAIN  'MAIN CODE'
- -command-handler.js :module  <= this
- -admin.js :module
-
  
 ran by node.js
 
-2020-12-29
+2022-1-29
 
 */
 
-const ping = require('./command/ping.js');
-const logger = require('./util/logger');
-const admin = require('./command/admin/admin.js');
+"use strict"
+
+const logger = require('../util/logger');
+const embedContent = require("../util/embed");
+
+const adminCommandRunner = require('./adminCommandRunner.js');
+const pingCommandRunner = require("./pingCommandRunner");
 
 
-async function commandHandler([command, ...args],message,guildData,BOT_DATA,client){
 
-    switch(command.toLowerCase()){
-        case BOT_DATA.COMMAND :
-            if(!(message.author.id == message.guild.ownerID || guildData.Admin.indexOf(message.author.id)>-1)) break;
-            AdminCommandHandler([command, ...args],message,guildData,BOT_DATA,client);
-            break;
+const configManager = require("../config/configManager");
 
-        case "ping" :
-            ping.ping([command, ...args],message,guildData,BOT_DATA,client)
-            break;
-      };
+module.exports = (client)=>{
+    client.on("messageCreate", async message => {
+        if(!message.content.startsWith(configManager.getBotData("PREFIX"))) return;
+
+        const [command, ...args] = message.content.slice(configManager.getBotData("PREFIX").length).split(' ');   
+        switch(command.toLowerCase()){
+            case configManager.getBotData("COMMAND") :
+                if(!(message.author.id == message.guild.ownerId || configManager.getGuildtData("Admin").indexOf(message.author.id)>-1)){
+                    message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `実行権限がありません。`));
+                    break;
+                };
+                AdminCommandHandler([command, ...args],message,client);
+                break;
+        };
+    })
 }
 
 
-async function AdminCommandHandler([command, ...args],message,guildData,BOT_DATA,client){
-
+async function AdminCommandHandler([command, ...args],message,client){
+    if(args.length==0){
+        message.reply(embedContent.errorWithTitle(`❌コマンド実行失敗`, `引数が不足しています。\n実行例\`${configManager.getBotData("PREFIX")}${configManager.getBotData("COMMAND")} <サブコマンド>\``));
+        return;
+    }
     switch(args[0].toLowerCase()){
         case "admin" :
-            admin.adminManager([command, ...args],message,guildData,BOT_DATA,client);
+        case "a":
+            adminCommandRunner([command, ...args],message,client);
             break;
 
+        case "ping":
+            pingCommandRunner([command, ...args], message);
+            break;
+    
         case "stop" :
             logger.info(`server was stoped by {cyan}${message.author.tag}`);
             await message.delete();
-            client.destroy();
             process.exit(0);
-        
+
+        case "help" :
+        case "h":
+            message.reply(embedContent.infoWithTitle(`❔ヘルプ`, `ここにヘルプを記述`));
+            break;
+
         default:
-            message.reply(`Unknown command.`);
+            message.reply(embedContent.errorWithTitle(`❓コマンドがありません`, `実行したコマンドは登録されていません。`));
             break;
       };
 }
-
-exports.commandHandler = commandHandler
